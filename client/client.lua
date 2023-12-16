@@ -340,7 +340,7 @@ function OpenMenuSelect()
 				SetCamActiveWithInterp(mainCam, LastCam, 3000, 500, 500)
 				created = true
 				stopLoop = true
-				N_0xdd1232b332cbb9e7(3, 1, 0)
+				UiFeedClearChannel(3, 1, 0)
 			end
 
 			if (data.current.value == "choose") then
@@ -416,12 +416,12 @@ function OpenMenuSelect()
 						Wait(0)
 
 						if IsControlJustPressed(0, joaat("INPUT_CREATOR_DELETE")) then
-							N_0xdd1232b332cbb9e7(3, 1, 0)
+							UiFeedClearChannel(3, 1, 0)
 							break
 						end
 
 						if IsControlJustPressed(0, joaat("INPUT_FRONTEND_CANCEL")) then
-							N_0xdd1232b332cbb9e7(3, 1, 0)
+							UiFeedClearChannel(3, 1, 0)
 							pressed = false
 							return
 						end
@@ -475,7 +475,7 @@ function OpenMenuSelect()
 				finish(true)
 				CharSelect()
 				stopLoop = true
-				N_0xdd1232b332cbb9e7(3, 1, 0) --UI_FEED_CLEAR_CHANNEL
+				UiFeedClearChannel(3, 1, 0) --UI_FEED_CLEAR_CHANNEL
 			end
 		end, function(menu, data)
 		end)
