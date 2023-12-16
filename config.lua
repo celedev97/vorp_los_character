@@ -14,8 +14,8 @@ Config.AllowPlayerDeleteCharacter = true
 Config.secondChanceItem = "secondchance"
 -- after creating character player will spawn here
 Config.SpawnCoords = {
-    position = vector3(-67.27, -392.34, 71.79),
-    heading = 171.98
+    position = vector3(2851.88, -1425.4, 42.25),
+    heading = 50.9
 }
 
 Config.Webhook = {

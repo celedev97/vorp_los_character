@@ -38,6 +38,7 @@ AddEventHandler("vorpcharacter:deleteCharacter", function(charid)
 	local webhook = Config.Webhook.deleteCharacter
 	local User = VorpCore.getUser(_source)
 	User.removeCharacter(charid)
+	if(webhook == nil or webhook == '') then return end
 	VorpCore.AddWebhook('Character Deleted', webhook, 'Steam Name: '..GetPlayerName(_source)..' \n Character ID: '..charid)
 end)
 
@@ -87,6 +88,10 @@ function Checkmissingkeys(data, key, gender)
 					data["Eyes"] = 928002221
 				end
 			end
+			if data["Hair"] == 0 and gender == "mp_female" then
+				switch = true
+				data["Hair"] = 1484585410 -- *add deafult characters hair so they are not bald to females.
+			end
 		end
 		return data, switch
 	end
@@ -94,6 +99,18 @@ function Checkmissingkeys(data, key, gender)
 		for k, v in pairs(PlayerClothing) do
 			if data[k] == nil then
 				data[k] = v
+			end
+			--* add component to body female so it doesnt show it with holes
+			if data["Skirt"] == -1 and data["Pant"] == -1 and gender == "mp_female" then
+				data["Skirt"] = -323977844
+			end
+
+			if data["Shirt"] == -1 and gender == "mp_female" then
+				data["Shirt"] = -599669674
+			end
+
+			if data["Boots"] == -1 and gender == "mp_female" then
+				data["Boots"] = 526124654
 			end
 		end
 		return data, switch
