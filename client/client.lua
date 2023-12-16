@@ -267,7 +267,7 @@ local function finish(boolean)
 	exports.weathersync:setSyncEnabled(true)
 end
 
-local imgPath = "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_character/images/%s.png'>"
+local imgPath = "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_los_character/images/%s.png'>"
 local function addNewelements(menu)
 	local available = MaxCharacters - #myChars
 	for i = 1, available, 1 do

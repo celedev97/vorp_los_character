@@ -97,9 +97,8 @@ local function __GetName(Result)
     return splitString[1], splitString[2]
 end
 
-local imgPath = "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_character/images/%s.png'>"
-local imgPath1 =
-"<img style='max-height:20px;max-width:20px;margin-left: 10px;' src='nui://vorp_character/images/%s.png'>"
+local imgPath = "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_los_character/images/%s.png'>"
+local imgPath1 = "<img style='max-height:20px;max-width:20px;margin-left: 10px;' src='nui://vorp_los_character/images/%s.png'>"
 local __CHARNAME = nil
 local __DESC = nil
 local __VALUE = nil
@@ -364,7 +363,7 @@ function OpenClothingMenu(table)
         if ToLabel[category] then
             if gender == "Female" then
                 local path =
-                "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_character/clothingfemale/%s.png'>"
+                "<img style='max-height:532px;max-width:344px;float: center;'src='nui://vorp_los_character/clothingfemale/%s.png'>"
                 elements[#elements + 1] = {
                     label = ToLabel[category],
                     value = category,
@@ -407,7 +406,7 @@ function OpenComponentMenu(table, category, label)
     MenuData.CloseAll()
     local elements = {}
     local imgPath =
-    "<br><img style='max-height:532px;max-width:344px;float: center; ' src='nui://vorp_character/images/%s.png'>"
+    "<br><img style='max-height:532px;max-width:344px;float: center; ' src='nui://vorp_los_character/images/%s.png'>"
 
     elements[#elements + 1] = {
         label = label,
