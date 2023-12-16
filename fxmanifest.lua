@@ -30,9 +30,10 @@ files {
 
 --========= VERSION =============--
 
-version '1.4'
-vorp_checker 'yes'
-vorp_name '^4Resource version Check^3'
-vorp_github 'https://github.com/VORPCORE/vorp_character-lua'
+-- DISABLED VERSION CHECK AS THIS RESOURCE WILL BE HEAVILY MODIFIED FOR LAND OF STEAM AND UPDATES FROM VORP COULD BREAK IT
+--version '1.4'
+--vorp_checker 'yes'
+--vorp_name '^4Resource version Check^3'
+--vorp_github 'https://github.com/VORPCORE/vorp_character-lua'
 
 -- this script is protected under its license.
