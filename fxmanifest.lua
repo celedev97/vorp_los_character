@@ -9,6 +9,7 @@ lua54 'yes'
 
 shared_scripts {
 	'config.lua',
+	'factions_config.lua',
 	'shared/*.lua'
 }
 

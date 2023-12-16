@@ -263,6 +263,16 @@ Translation.Langs = {
             },
             element4 = { label = "Inizia l'Avventura", desc = "Inizia la tua avventura premendo Invio" },
         },
+        MenuFaction = {
+            title = "Fazione",
+            subtitle = "Scegli la fazione del tuo personaggio",
+        },
+        MenuFactionConfirm = {
+            title = "Conferma",
+            subtitle = "Conferma la scelta della fazione",
+            yes = { label = "Conferma", desc = "Conferma la tua scelta, questa azione è irreversibile, una volta scelta la fazione l'unico modo per annullare la scelta è uscire dal gioco e rientrare." },
+            no = { label = "Annulla", desc = "Torna alla selezione della fazione del personaggio" },
+        },
         MenuClothes = {
             title       = "Abbigliamento",
             subtitle    = "Sottomenu",

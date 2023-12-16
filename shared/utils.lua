@@ -1,3 +1,5 @@
+PlayerFaction = nil
+
 PlayerSkin = {
     sex                               = "mp_male",
     albedo                            = 0,

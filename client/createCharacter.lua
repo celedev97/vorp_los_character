@@ -440,7 +440,7 @@ function CreatePlayerModel(model, cam)
 	SetEntityInvincible(PlayerPedId(), true)
 	Citizen.InvokeNative(0x25ACFC650B65C538, PlayerPedId(), 1.0) -- scale
 	DoScreenFadeIn(3000)
-	OpenCharCreationMenu(Clothing)
+	OpenFactionMenu(Clothing)
 end
 
 RegisterNetEvent('vorp_character:Server:SecondChance', function(skin, comps)
@@ -497,5 +497,5 @@ RegisterNetEvent('vorp_character:Server:SecondChance', function(skin, comps)
 			DrawLightWithRange(-560.1646, -3782.066, 238.5975, 250, 250, 250, 7.0, 130.0)
 		end
 	end)
-	OpenCharCreationMenu(Clothing)
+	OpenFactionMenu(Clothing)
 end)

@@ -7,6 +7,15 @@ end)
 
 
 --* Local functions
+local function SetSelectedFaction(factionID)
+    print("SETTING SELECTED FACTION..."..factionID)
+    PlayerFaction = factionID
+    -- TODO: LOAD THE POSSIBLE OPTIONS FOR THE FACTION
+    -- CHECK IF THE CURRENT VALUES ARE IN THE POSSIBLE OPTIONS
+    -- IF THEY'RE NOT SET THE DEFAULTS, THEN UPDATE THE CHARACTER
+end
+
+
 local function RemoveTagFromMetaPed(category)
     local __player = PlayerPedId()
 
@@ -96,6 +105,84 @@ local __DESC = nil
 local __VALUE = nil
 local __VALUE1 = nil
 
+--* FACTION MENU
+function OpenFactionMenu(clothingtable)
+    MenuData.CloseAll()
+    local elements = {}
+
+    for key, value in pairs(Factions) do
+        elements[#elements + 1] = {
+            label = value.label,
+            value = value.value,
+            desc = value.desc,
+            img = value.img
+        }
+    end
+
+
+    MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
+        {
+            title = T.MenuFaction.title,
+            subtext = T.MenuFaction.subtitle,
+            align = Config.Align,
+            elements = elements,
+        },
+
+        function(data, menu)
+            if (data.current.value) then
+                OpenConfirmFactionMenu(clothingtable, data.current)
+            end
+        end,
+        function(data, menu)
+
+        end)
+end
+
+function OpenConfirmFactionMenu(clothingtable, factionData)
+    MenuData.CloseAll()
+
+    local elements = {
+        {
+            label = T.MenuFactionConfirm.yes.label,
+            value = "confirm",
+            desc = T.MenuFactionConfirm.yes.desc,
+        },
+        {
+            label = T.MenuFactionConfirm.no.label,
+            value = "cancel",
+            desc = T.MenuFactionConfirm.no.desc,
+        }
+    }
+
+    MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
+        {
+            title = T.MenuFactionConfirm.title,
+            subtext = T.MenuFactionConfirm.subtitle ..' - '.. factionData.label,
+            align = Config.Align,
+            elements = elements,
+            lastmenu = "OpenFactionMenu"
+        },
+
+        function(data, menu)
+            -- if back
+            if (data.current == "backup") then
+                _G[data.trigger](clothingtable)
+            end
+
+            if (data.current.value == "confirm") then
+                SetSelectedFaction(factionData.value)
+                OpenCharCreationMenu(clothingtable)
+            end
+
+            if (data.current.value == "cancel") then
+                OpenFactionMenu(clothingtable)
+            end
+        end,
+        function(data, menu)
+
+        end)
+end
+
 function OpenCharCreationMenu(clothingtable)
     PrepareMusicEvent("MP_CHARACTER_CREATION_START")
     TriggerMusicEvent("MP_CHARACTER_CREATION_START")
@@ -106,6 +193,20 @@ function OpenCharCreationMenu(clothingtable)
     local img2 = "menu_icon_tick"
     local img3 = "generic_walk_style"
     local img4 = "emote_greet_hey_you"
+
+    local selectedFaction = "";
+    if PlayerFaction ~= nil then
+        print("SELECTED FACTION" .. PlayerFaction)
+
+        for _, faction in ipairs(Factions) do
+            if faction.value == PlayerFaction then
+                selectedFaction = ' - ' .. faction.label
+                break
+            end
+        end
+
+        print("SELECTED FACTION LABEL" .. selectedFaction)
+    end
 
     local elements = {
         {
@@ -151,7 +252,7 @@ function OpenCharCreationMenu(clothingtable)
     MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
         {
             title = T.MenuCreation.title,
-            subtext = T.MenuCreation.subtitle,
+            subtext = T.MenuCreation.subtitle..selectedFaction,
             align = Config.Align,
             elements = elements,
             lastmenu = "OpenCharCreationMenu"
@@ -243,7 +344,7 @@ function OpenCharCreationMenu(clothingtable)
             if (data.current.value == "save") then
                 menu.close()
                 --* name character
-                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName)
+                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName, PlayerFaction)
                 CachedComponents = PlayerClothing
                 CachedSkin = PlayerSkin
                 __CloseAll()

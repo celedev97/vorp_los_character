@@ -19,12 +19,17 @@ end)
 
 
 RegisterServerEvent("vorpcharacter:saveCharacter")
-AddEventHandler("vorpcharacter:saveCharacter", function(skin, clothes, firstname, lastname)
+AddEventHandler("vorpcharacter:saveCharacter", function(skin, clothes, firstname, lastname, faction)
 	local _source = source
 	local playerCoords = Config.SpawnCoords.position
 	local playerHeading = Config.SpawnCoords.heading
 	VorpCore.getUser(_source).addCharacter(firstname, lastname, json.encode(skin), json.encode(clothes))
 	Wait(600)
+	exports.ghmattimysql:execute("UPDATE characters SET faction = @faction WHERE firstname = @firstname AND lastname = @lastname", {
+		['@faction'] = faction,
+		['@firstname'] = firstname,
+		['@lastname'] = lastname
+	})
 	TriggerClientEvent("vorp:initCharacter", _source, playerCoords, playerHeading, false)
 	-- wait for char to be made
 	SetTimeout(3000, function()

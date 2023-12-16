@@ -7,7 +7,7 @@ Config.Align = "top-left" -- menu
 Lang = "Italian"
 
 --* when player choosing a name  make sure it doesn't contain any of the words in the list below
-Config.BannedNames = { "Arthur", "Marshton", "Shit", "Dick" } --* you can add more words
+Config.BannedNames = { "Luminoso" } --* you can add more words
 
 Config.AllowPlayerDeleteCharacter = true
 -- item name for second chance character
