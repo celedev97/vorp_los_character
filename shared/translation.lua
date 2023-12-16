@@ -46,7 +46,7 @@ Translation.Langs = {
         },
         MenuCreation = {
             title = "Menu personaggio",
-            subtitle = "Sotto-menu",
+            subtitle = "Creazione personaggio",
             label = "Nome scelto",
             element = { label = "Aspetto", desc = "Scegli l'aspetto del tuo personaggio" },
             element2 = { label = "Abbigliamento", desc = "Scegli l'abbigliamento del personaggio" },
@@ -123,6 +123,7 @@ Translation.Langs = {
             short = "Basso",
             normal = "Normale",
             tall = "Alto",
+            extraTall = "Altissimo",
         },
 
         MenuAge = {

@@ -5,14 +5,57 @@ TriggerEvent("menuapi:getData", function(call)
     MenuData = call
 end)
 
+local height = 0
+local heightIndex = 0
+local heightLabel = T.MenuAppearance.element5.label
+
+local function printTable(table)
+    if type(table) == 'table' then
+        local s = '{ '
+        for k, v in pairs(table) do
+            if type(k) ~= 'number' then k = '"' .. k .. '"' end
+            s = s .. '[' .. k .. '] = ' .. printTable(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(table)
+    end
+end
 
 --* Local functions
+local function SetHeight(selectedHeightIndex)
+    heightIndex = selectedHeightIndex
+    if heightIndex == 1 then
+        height = 0.95
+        heightLabel = T.MenuAppearance.short
+    end
+    if heightIndex == 2 then
+        height = 1.0
+        heightLabel = T.MenuAppearance.normal
+    end
+    if heightIndex == 3 then
+        height = 1.05
+        heightLabel = T.MenuAppearance.tall
+    end
+    if heightIndex == 4 then
+        height = 1.1
+        heightLabel = T.MenuAppearance.extraTall
+    end
+    SetPedScale(PlayerPedId(), height)
+    PlayerSkin.Scale = height
+end
+
 local function SetSelectedFaction(factionID)
-    print("SETTING SELECTED FACTION..."..factionID)
+    print("SETTING SELECTED FACTION..." .. factionID)
     PlayerFaction = factionID
     -- TODO: LOAD THE POSSIBLE OPTIONS FOR THE FACTION
     -- CHECK IF THE CURRENT VALUES ARE IN THE POSSIBLE OPTIONS
     -- IF THEY'RE NOT SET THE DEFAULTS, THEN UPDATE THE CHARACTER
+
+    local factionData = GetFactionData(factionID)
+    -- setting default height for this faction
+    SetHeight(factionData.appearance.height.value)
+
 end
 
 
@@ -182,6 +225,14 @@ function OpenConfirmFactionMenu(clothingtable, factionData)
         end)
 end
 
+function GetFactionData(factionID)
+    for index, value in ipairs(Factions) do
+        if value.value == factionID then
+            return value
+        end
+    end
+end
+
 function OpenCharCreationMenu(clothingtable)
     PrepareMusicEvent("MP_CHARACTER_CREATION_START")
     TriggerMusicEvent("MP_CHARACTER_CREATION_START")
@@ -195,15 +246,9 @@ function OpenCharCreationMenu(clothingtable)
 
     local selectedFaction = "";
     if PlayerFaction ~= nil then
-        print("SELECTED FACTION" .. PlayerFaction)
-
-        for _, faction in ipairs(Factions) do
-            if faction.value == PlayerFaction then
-                selectedFaction = ' - ' .. faction.label
-                break
-            end
-        end
-
+        local faction = GetFactionData(PlayerFaction)
+        print(printTable(faction))
+        selectedFaction = ' - ' .. faction.label
         print("SELECTED FACTION LABEL" .. selectedFaction)
     end
 
@@ -343,7 +388,7 @@ function OpenCharCreationMenu(clothingtable)
             if (data.current.value == "save") then
                 menu.close()
                 --* name character
-                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName, PlayerFaction)
+                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName, PlayerFaction.value)
                 CachedComponents = PlayerClothing
                 CachedSkin = PlayerSkin
                 __CloseAll()
@@ -490,11 +535,10 @@ function OpenComponentMenu(table, category, label)
         end)
 end
 
-local height = 0
-local heightLabel = T.MenuAppearance.element5.label
 function OpenAppearanceMenu(clothingtable)
     MenuData.CloseAll()
     local gender = GetGender()
+    local factionData = GetFactionData(PlayerFaction)
     local elements = {
         {
             label = T.MenuAppearance.element.label,
@@ -520,13 +564,14 @@ function OpenAppearanceMenu(clothingtable)
             label = heightLabel,
             tag = "height",
             type = "slider",
-            min = 0,
+            min = factionData.appearance.height.min,
             comp = nil,
-            max = 3,
-            value = 0,
+            max = factionData.appearance.height.max,
+            value = heightIndex,
             short = 1,
             tall = 3,
             normal = 2,
+            extraTall = 4;
             desc = imgPath:format("character_creator_appearance") .. "<br>" .. T.MenuAppearance.element5.desc
         },
         {
@@ -579,22 +624,9 @@ function OpenAppearanceMenu(clothingtable)
             if (data.current.type == "slider" and not data.current.info) then
                 for key, value in pairs(menu.data.elements) do
                     if value.tag == data.current.tag then
-                        if data.current.value == data.current.short then
-                            height = 0.95
-                            heightLabel = T.MenuAppearance.short
-                        end
-                        if data.current.value == data.current.normal then
-                            height = 1.0
-                            heightLabel = T.MenuAppearance.normal
-                        end
-                        if data.current.value == data.current.tall then
-                            height = 1.05
-                            heightLabel = T.MenuAppearance.tall
-                        end
-                        SetPedScale(PlayerPedId(), height)
+                        SetHeight(data.current.value)
                         menu.setElement(key, "label", heightLabel)
                         menu.refresh()
-                        PlayerSkin.Scale = height
                         break
                     end
                 end
