@@ -1571,7 +1571,7 @@ function OpenLifeStyleMenu(table)
             }
             --* opacity
             elements[#elements + 1] = {
-                label = labelLookup[key].label .. T.MenuLifeStyle.label,
+                label = labelLookup[key].label .. " ()" .. T.MenuLifeStyle.opacityLabel..")",
                 value = PlayerSkin[labelLookup[key].opacity],
                 min = 0,
                 max = 10,
