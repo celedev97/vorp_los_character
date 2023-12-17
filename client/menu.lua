@@ -730,6 +730,7 @@ function OpenBodyMenu(table)
     local elements = {
         -- components
         {
+            -- body type
             label = T.MenuBody.element.label,
             type = "slider",
             value = 0,
@@ -741,7 +742,7 @@ function OpenBodyMenu(table)
         },
 
         {
-            -- skin color
+            -- waist type
             label = T.MenuBody.element2.label,
             type = "slider",
             value = 0,
@@ -755,7 +756,7 @@ function OpenBodyMenu(table)
         },
 
         {
-            -- skin color
+            -- body type
             label = T.MenuBody.element3.label,
             type = "slider",
             value = 0,
@@ -769,7 +770,7 @@ function OpenBodyMenu(table)
         },
 
         {
-            -- skin color
+            -- leg type
             label = T.MenuBody.element4.label,
             type = "slider",
             value = 0,
