@@ -9,6 +9,8 @@ local height = 0
 local heightIndex = 0
 local heightLabel = T.MenuAppearance.element5.label
 
+local heritageIndex = 1
+
 local function printTable(table)
     if type(table) == 'table' then
         local s = '{ '
@@ -23,6 +25,8 @@ local function printTable(table)
 end
 
 --* Local functions
+local currentFactionData
+
 local function SetHeight(selectedHeightIndex)
     heightIndex = selectedHeightIndex
     if heightIndex == 1 then
@@ -48,15 +52,24 @@ end
 local function SetSelectedFaction(factionID)
     print("SETTING SELECTED FACTION..." .. factionID)
     PlayerFaction = factionID
+
+    for _, value in ipairs(Factions) do
+        if value.value == factionID then
+            currentFactionData = value
+        end
+    end
     -- TODO: LOAD THE POSSIBLE OPTIONS FOR THE FACTION
     -- CHECK IF THE CURRENT VALUES ARE IN THE POSSIBLE OPTIONS
     -- IF THEY'RE NOT SET THE DEFAULTS, THEN UPDATE THE CHARACTER
 
-    local factionData = GetFactionData(factionID)
     -- setting default height for this faction
-    SetHeight(factionData.appearance.height.value)
-
+    SetHeight(currentFactionData.appearance.height.value)
+    -- TODO: setting first heritage for this faction
+    SetHeritage(1)
 end
+
+
+
 
 
 local function RemoveTagFromMetaPed(category)
@@ -225,14 +238,6 @@ function OpenConfirmFactionMenu(clothingtable, factionData)
         end)
 end
 
-function GetFactionData(factionID)
-    for index, value in ipairs(Factions) do
-        if value.value == factionID then
-            return value
-        end
-    end
-end
-
 function OpenCharCreationMenu(clothingtable)
     PrepareMusicEvent("MP_CHARACTER_CREATION_START")
     TriggerMusicEvent("MP_CHARACTER_CREATION_START")
@@ -246,10 +251,9 @@ function OpenCharCreationMenu(clothingtable)
 
     local selectedFaction = "";
     if PlayerFaction ~= nil then
-        local faction = GetFactionData(PlayerFaction)
-        print(printTable(faction))
-        selectedFaction = ' - ' .. faction.label
+        selectedFaction = ' - ' .. currentFactionData.label
         print("SELECTED FACTION LABEL" .. selectedFaction)
+        print(printTable(currentFactionData))
     end
 
     local elements = {
@@ -538,7 +542,7 @@ end
 function OpenAppearanceMenu(clothingtable)
     MenuData.CloseAll()
     local gender = GetGender()
-    local factionData = GetFactionData(PlayerFaction)
+
     local elements = {
         {
             label = T.MenuAppearance.element.label,
@@ -564,9 +568,9 @@ function OpenAppearanceMenu(clothingtable)
             label = heightLabel,
             tag = "height",
             type = "slider",
-            min = factionData.appearance.height.min,
+            min = currentFactionData.appearance.height.min,
             comp = nil,
-            max = factionData.appearance.height.max,
+            max = currentFactionData.appearance.height.max,
             value = heightIndex,
             short = 1,
             tall = 3,
