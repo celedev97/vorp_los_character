@@ -1,7 +1,7 @@
 local allHeritages = {
     Male = {
         {
-            label = "White fella",             -- change label only
+            label = "Bianco",             -- change label only
             imgColor = "white",                -- change img only
             Heads = { "A0BE4A7B", "1E78F6D", "27A4DC22", "5E9A394D", "7BE9E352", "7D7AA347", "839997EF",
                 "84F3E485",
@@ -12,7 +12,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_mr1_sc08_c0_000_ab" },
         },
         {
-            label = "Mexican",
+            label = "Messicano",
             imgColor = "white2",
             Heads = { "3625908B", "40365810", "613CF195", "66B5DE24", "7AFEF216", "8574F682", "91417D14",
                 "93C69313", "9D604053", "A23ED555", "AC2963F2", "C1130197", "C55F46B9", "CF482B6A",
@@ -24,7 +24,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_mr1_sc02_c0_000_ab" },
         },
         {
-            label = "Asian",
+            label = "Asiatico",
             imgColor = "white3",
             Heads = { "158CB7F2", "36739C03", "48133466", "4E11220E", "68C7CDA8", "6DF5043C", "6EF1C97C",
                 "771A7EE9", "7B035098", "89556A4D", "9DD7C74F", "A156BC1F", "AFCDE52E", "C6077794",
@@ -35,7 +35,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_mr1_sc03_c0_000_ab" },
         },
         {
-            label = "Native Dark",
+            label = "Nativo Scuro",
             imgColor = "brown",
             Heads = { "4C5C14D1", "2BADE2F9", "32E0BD65", "51EE52F8", "53361205", "7150F35A", "7320223C",
                 "8036DB0B", "8239BA1C", "4DAD06D9", "93C8CFE3", "B0B07238", "BC310F75", "B9C497C7",
@@ -45,7 +45,7 @@ local allHeritages = {
             HeadTexture = { "MP_head_fr1_sc01_c0_000_ab" },
         },
         {
-            label = "Native",
+            label = "Nativo",
             imgColor = "brown2",
             Heads = { "1EF1D4F5", "20BEAD17", "17E48A5C", "1D1391CB", "3E1D8D10", "41FB09E2", "421209B8",
                 "44C938AE", "465D3511", "48531C43", "5A5A4569", "69A6DC4D", "87198A9F", "8C099185",
@@ -56,7 +56,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_mr1_sc04_c0_000_ab" },
         },
         {
-            label = "African",
+            label = "Africano",
             imgColor = "black",
             Heads = { "101E374E", "47A369D9", "48A3A1FC", "4C55A1AB", "5248AA25", "52CC549C", "54CED1F4",
                 "6817A7D2", "6B50E776", "729570C7", "8B921D0F", "9BE9739A", "9CCAB601", "A0D12D3E",
@@ -80,7 +80,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_fr1_sc08_c0_000_ab" },
         },
         {
-            label = "Mexican",
+            label = "Messicano",
             imgColor = "",
             Heads = { "1C851DA8", "2E1791E1", "477D749A", "62534D55", "6D8686E8", "87371192", "886DB564",
                 "8A1E0CED", "FEA98F74", "E64076CE", "E6377EEA", "E4EE32DC", "CDDA79D6", "C9677F2B",
@@ -91,7 +91,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_fr1_sc02_c0_000_ab" },
         },
         {
-            label = "Asian",
+            label = "Asiatico",
             imgColor = "",
             Heads = { "1E6FDDFB", "30B5C9FA", "43857351", "50A1A9F2", "5A274672", "6369FC85", "65A5CE70",
                 "6DCBE781", "E23268F4", "D406DA89", "D47BD345", "DEE3A266", "D3949F79",
@@ -101,7 +101,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_fr1_sc03_c0_000_ab" },
         },
         {
-            label = "African",
+            label = "Africano",
             imgColor = "",
             Heads = { "11567C3", "1D896D8D", "24452D0B", "34FC0B13", "43F08B06", "53B5B98F", "5DC6A042",
                 "5F192A74", "7F2AAA30", "89B0F7FE", "E72483EC", "CC66815D", "C65BEAD1", "B3F26095",
@@ -112,7 +112,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_fr1_sc05_c0_000_ab" },
         },
         {
-            label = "Native",
+            label = "Nativo",
             imgColor = "",
             Heads = { "2AE6E5C", "4A52F943", "50882CFA", "", "65F9F637", "6A0AB89D", "8E53BDC1",
                 "F7AC67A8", "E6648288", "E25DCD6C", "CDC2BD9", "C71039E6", "BFAFA3EF", "B8F8F515",
@@ -122,7 +122,7 @@ local allHeritages = {
             HeadTexture = { "mp_head_fr1_sc01_c0_000_ab" },
         },
         {
-            label = "Native",
+            label = "Nativo",
             imgColor = "",
             Heads = {
                 "11F69034", "169B95C6", "1C32EE08", "22B4E685", "3129C6F1", "3C7D04E4",
@@ -137,7 +137,7 @@ local allHeritages = {
     }
 }
 
-local function getHeritages(heritageNames)
+local function filterHeritages(heritageNames)
     local heritagesMale = {}
     local heritagesFemale = {}
 
@@ -173,11 +173,11 @@ Factions = {
                 max = 2,
                 value = 2,
             },
-            heritages = getHeritages({
-                "White fella",
-                "Mexican",
-                "Asian",
-                "African",
+            heritages = filterHeritages({
+                "Bianco",
+                "Messicano",
+                "Asiatico",
+                "Africano",
             })
         }
     },
@@ -219,9 +219,9 @@ Factions = {
                 max = 2,
                 value = 2,
             },
-            heritages = getHeritages({
-                "Native Dark",
-                "Native",
+            heritages = filterHeritages({
+                "Nativo",
+                "Nativo Scuro",
             })
         },
     },
