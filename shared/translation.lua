@@ -48,6 +48,7 @@ Translation.Langs = {
             title = "Menu personaggio",
             subtitle = "Creazione personaggio",
             label = "Nome scelto",
+            element0 = { label = "Cambia Fazione", desc = "Cambia fazione, questo potrebbe resettare alcune delle caratteristiche di aspetto del personaggio, usare solo se necessario." },
             element = { label = "Aspetto", desc = "Scegli l'aspetto del tuo personaggio" },
             element2 = { label = "Abbigliamento", desc = "Scegli l'abbigliamento del personaggio" },
             element3 = {
@@ -64,8 +65,14 @@ Translation.Langs = {
         MenuFactionConfirm = {
             title = "Conferma",
             subtitle = "Conferma la scelta della fazione",
-            yes = { label = "Conferma", desc = "Conferma la tua scelta, questa azione è irreversibile, una volta scelta la fazione l'unico modo per annullare la scelta è uscire dal gioco e rientrare." },
+            yes = { label = "Conferma", desc = "Conferma la tua scelta, scegliere una fazione impone limitazioni all'aspetto, e conseguenze in gioco, leggere il regolamento per informazioni sulle fazioni." },
             no = { label = "Annulla", desc = "Torna alla selezione della fazione del personaggio" },
+        },
+        MenuFactionChangeConfirm = {
+            title = "Conferma",
+            subtitle = "Conferma il cambio della fazione",
+            yes = { label = "Conferma", desc = "Vuoi davvero tornare alla selezione della fazione?<br><b>NOTA: Potresti perdere alcune delle peronalizzazioni fatte al tuo personaggio!</b>" },
+            no = { label = "Annulla", desc = "Torna alla personalizzazione personaggio" },
         },
         MenuClothes = {
             title       = "Abbigliamento",

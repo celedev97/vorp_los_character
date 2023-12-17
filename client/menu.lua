@@ -11,12 +11,12 @@ local heightLabel = T.MenuAppearance.element5.label
 
 local heritageIndex = 1
 
-local function printTable(table)
+function PrintTable(table)
     if type(table) == 'table' then
         local s = '{ '
         for k, v in pairs(table) do
             if type(k) ~= 'number' then k = '"' .. k .. '"' end
-            s = s .. '[' .. k .. '] = ' .. printTable(v) .. ','
+            s = s .. '[' .. k .. '] = ' .. PrintTable(v) .. ','
         end
         return s .. '} '
     else
@@ -49,6 +49,45 @@ local function SetHeight(selectedHeightIndex)
     PlayerSkin.Scale = height
 end
 
+local function SetHeritage(selectedHeritageIndex)
+    heritageIndex = selectedHeritageIndex
+
+    local __player      = PlayerPedId()
+    local gender = GetGender()
+
+    local index         = heritageIndex
+
+    __SKINCOLOR         = index
+    local SkinColor     = currentFactionData.appearance.heritages[gender][index]
+    local heritage      = SkinColor.Heads[index]
+    local legs          = SkinColor.Legs[index] or gender == "Male" and "887C4C70" or
+        gender == "Female" and "EDE17D5F"
+    local body          = SkinColor.Body[index] or gender == "Male" and "CD7F8895" or
+        gender == "Female" and "C05A25AD"
+
+    local headtexture   = joaat(SkinColor.HeadTexture[1])
+    local Heads         = tonumber("0x" .. heritage)
+    local Legs          = tonumber("0x" .. legs)
+    local Body          = tonumber("0x" .. body)
+    local Albedo        = Config.texture_types[gender].albedo
+
+    PlayerSkin.HeadType = Heads
+    PlayerSkin.BodyType = Body
+    PlayerSkin.LegsType = Legs
+    PlayerSkin.albedo   = headtexture
+
+    print("HEADS: " .. Heads)
+    print("LEGS: " .. Legs)
+    print("BODY: " .. Body)
+    print("ALBEDO: " .. Albedo)
+
+    ApplyComponentToPed(__player, Heads)
+    ApplyComponentToPed(__player, Legs)
+    ApplyComponentToPed(__player, Body)
+    Citizen.InvokeNative(0xC5E7204F322E49EB, Albedo, headtexture, 0x7FC5B1E1)
+    UpdateVariation(__player)
+end
+
 local function SetSelectedFaction(factionID)
     print("SETTING SELECTED FACTION..." .. factionID)
     PlayerFaction = factionID
@@ -58,6 +97,7 @@ local function SetSelectedFaction(factionID)
             currentFactionData = value
         end
     end
+    print(PrintTable(currentFactionData))
     -- TODO: LOAD THE POSSIBLE OPTIONS FOR THE FACTION
     -- CHECK IF THE CURRENT VALUES ARE IN THE POSSIBLE OPTIONS
     -- IF THEY'RE NOT SET THE DEFAULTS, THEN UPDATE THE CHARACTER
@@ -185,6 +225,7 @@ function OpenFactionMenu(clothingtable)
 
         function(data, menu)
             if (data.current.value) then
+                SetSelectedFaction(data.current.value)
                 OpenConfirmFactionMenu(clothingtable, data.current)
             end
         end,
@@ -225,7 +266,6 @@ function OpenConfirmFactionMenu(clothingtable, factionData)
             end
 
             if (data.current.value == "confirm") then
-                SetSelectedFaction(factionData.value)
                 OpenCharCreationMenu(clothingtable)
             end
 
@@ -236,6 +276,51 @@ function OpenConfirmFactionMenu(clothingtable, factionData)
         function(data, menu)
 
         end)
+end
+
+function OpenConfirmFactionChangeMenu(clothingtable)
+    MenuData.CloseAll()
+
+    local elements = {
+        {
+            label = T.MenuFactionChangeConfirm.yes.label,
+            value = "confirm",
+            desc = T.MenuFactionChangeConfirm.yes.desc,
+        },
+        {
+            label = T.MenuFactionChangeConfirm.no.label,
+            value = "cancel",
+            desc = T.MenuFactionChangeConfirm.no.desc,
+        }
+    }
+
+    MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
+        {
+            title = T.MenuFactionChangeConfirm.title,
+            subtext = T.MenuFactionChangeConfirm.subtitle,
+            align = Config.Align,
+            elements = elements,
+            lastmenu = "OpenCharCreationMenu"
+        },
+
+        function(data, menu)
+            -- if back
+            if (data.current == "backup") then
+                _G[data.trigger](clothingtable)
+            end
+
+            if (data.current.value == "confirm") then
+                OpenFactionMenu(clothingtable)
+            end
+
+            if (data.current.value == "cancel") then
+                OpenCharCreationMenu(clothingtable)
+            end
+        end,
+        function(data, menu)
+
+        end
+    )
 end
 
 function OpenCharCreationMenu(clothingtable)
@@ -253,10 +338,14 @@ function OpenCharCreationMenu(clothingtable)
     if PlayerFaction ~= nil then
         selectedFaction = ' - ' .. currentFactionData.label
         print("SELECTED FACTION LABEL" .. selectedFaction)
-        print(printTable(currentFactionData))
     end
 
     local elements = {
+        {
+            label = T.MenuCreation.element0.label,
+            value = "faction",
+            desc = T.MenuCreation.element0.desc
+        },
         {
             label = T.MenuCreation.element.label,
             value = "appearance",
@@ -269,7 +358,6 @@ function OpenCharCreationMenu(clothingtable)
             label = T.MenuCreation.element2.label,
             value = "clothing",
             desc = imgPath:format(img1) .. "<br> " .. T.MenuCreation.element2.desc,
-
         }
         elements[#elements + 1] = {
             label = __CHARNAME or T.MenuCreation.element3.label,
@@ -308,6 +396,10 @@ function OpenCharCreationMenu(clothingtable)
 
         function(data, menu)
             if (data.current == "backup") then
+            end
+            
+            if (data.current.value == "faction") then -- check if it has been built
+                OpenConfirmFactionChangeMenu(clothingtable)
             end
 
             if (data.current.value == "clothing") then -- check if it has been built
@@ -760,11 +852,11 @@ function OpenBodyMenu(table)
             label = T.MenuBody.element3.label,
             type = "slider",
             value = 0,
-            comp = Config.DefaultChar[gender],
+            comp = currentFactionData.appearance.heritages[gender],
             min = 0,
-            max = #Config.DefaultChar[gender][__SKINCOLOR].Body, -- get color index and update when component changes
+            max = #currentFactionData.appearance.heritages[gender][__SKINCOLOR].Body, -- get color index and update when component changes
             desc = imgPath:format("character_creator_build") .. "<br>" .. T.MenuBody.element3.desc ..
-                #Config.DefaultChar[gender][__SKINCOLOR].Body,
+                #currentFactionData.appearance.heritages[gender][__SKINCOLOR].Body,
             tag = "Body",
             option = "type"
         },
@@ -774,11 +866,11 @@ function OpenBodyMenu(table)
             label = T.MenuBody.element4.label,
             type = "slider",
             value = 0,
-            comp = Config.DefaultChar[gender],
+            comp = currentFactionData.appearance.heritages[gender],
             min = 0,
-            max = #Config.DefaultChar[gender][__SKINCOLOR].Legs, -- get color index and update when component changes
+            max = #currentFactionData.appearance.heritages[gender][__SKINCOLOR].Legs, -- get color index and update when component changes
             desc = imgPath:format("character_creator_build") .. "<br>" .. T.MenuBody.element4.desc ..
-                #Config.DefaultChar[gender][__SKINCOLOR].Legs,
+                #currentFactionData.appearance.heritages[gender][__SKINCOLOR].Legs,
             tag = "Legs",
             option = "type"
         },
@@ -801,7 +893,7 @@ function OpenBodyMenu(table)
             if data.current.option == "type" then
                 if data.current.value > 0 then
                     local index    = data.current.value
-                    local Comp     = Config.DefaultChar[gender][__SKINCOLOR]
+                    local Comp     = currentFactionData.appearance.heritages[gender][__SKINCOLOR]
                     local compType = tonumber("0x" .. Comp[data.current.tag][index])
 
                     if data.current.tag == "Body" then
@@ -840,16 +932,32 @@ function OpenHerritageMenu(table)
     local elements = {}
     local __player = PlayerPedId()
     local gender = GetGender()
+    local selectedHeritageData = currentFactionData.appearance.heritages[gender][heritageIndex];
 
     elements[#elements + 1] = {
-        label = T.MenuHeritage.element.label,
+        -- heritage
+        label = T.MenuHeritage.element.label .. ": " .. selectedHeritageData.label,
+        type = "slider",
+        value = heritageIndex,
+        info = currentFactionData.appearance.heritages[gender],
+        min = 1,
+        max = #currentFactionData.appearance.heritages[gender],
+        desc = T.MenuHeritage.element.desc .. #currentFactionData.appearance.heritages[gender] .. ' ' .. T.MenuHeritage.element.desc2,
+        tag = "heritage"
+    }
+
+    elements[#elements + 1] = {
+        -- skin color
+        label = T.MenuHeritage.element2.label .. #data.current.info[data.current.value].Heads,
         type = "slider",
         value = 0,
-        info = Config.DefaultChar[gender],
+        info = nil,
+        comp = data.current.info[data.current.value].Heads,
         min = 0,
-        max = #Config.DefaultChar[gender],
-        desc = T.MenuHeritage.element.desc .. #Config.DefaultChar[gender] .. ' ' .. T.MenuHeritage.element.desc2,
-        tag = "heritage"
+        max = #data.current.info[data.current.value].Heads,                 -- get color index and update when component changes
+        desc = T.MenuHeritage.element3.desc ..
+            #data.current.info[data.current.value].Heads .. ' ' .. T.MenuHeritage.element3.desc2,
+        tag = "color"
     }
 
     MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
@@ -866,17 +974,19 @@ function OpenHerritageMenu(table)
                 _G[data.trigger](table)
             end
 
-            if data.current.tag == "heritage" and not data.current.info then --* remove component variation
-                if data.current.value < 1 then
-                    if data.current.value ~= 0 then
-                        local Heads = tonumber("0x" .. data.current.comp[data.current.value])
-                        Citizen.InvokeNative(0xD3A7B003ED343FD9, __player, Heads, true, true,
-                            true)
-                        UpdateVariation(__player)
-                        PlayerSkin.HeadType = Heads
-                    end
-                end
-            end
+            --case for removing heritage, index 0/-1 this isn't used anymore since the heritages are obligatory now
+            -- if data.current.tag == "heritage" and not data.current.info then --* remove component variation
+            --     if data.current.value < 1 then
+            --         if data.current.value ~= 0 then
+            --             local Heads = tonumber("0x" .. data.current.comp[data.current.value])
+            --             Citizen.InvokeNative(0xD3A7B003ED343FD9, __player, Heads, true, true,
+            --                 true)
+            --             UpdateVariation(__player)
+            --             PlayerSkin.HeadType = Heads
+            --         end
+            --     end
+            -- end
+
 
             if data.current.tag == "color" and not data.current.info then -- * component varitaion
                 if data.current.value > 0 then
@@ -902,29 +1012,21 @@ function OpenHerritageMenu(table)
 
             if data.current.tag == "heritage" and data.current.info then -- * component type
                 if data.current.value > 0 then
-                    local index               = data.current.value
-                    __SKINCOLOR               = index
-                    local SkinColor           = data.current.info[index]
-                    local heritage            = SkinColor.Heads[index]
-                    local legs                = SkinColor.Legs[index] or gender == "Male" and "887C4C70" or
-                        gender == "Female" and "EDE17D5F"
-                    local body                = SkinColor.Body[index] or gender == "Male" and "CD7F8895" or
-                        gender == "Female" and "C05A25AD"
+                    -- change heritage and skin color
+                    local index = data.current.value
+                    selectedHeritageData = currentFactionData.appearance.heritages[gender][index]
 
-                    local headtexture         = joaat(SkinColor.HeadTexture[1])
-                    local Heads               = tonumber("0x" .. heritage)
-                    local Legs                = tonumber("0x" .. legs)
-                    local Body                = tonumber("0x" .. body)
-                    local Albedo              = Config.texture_types[gender].albedo
+                    SetHeritage(index)
 
+                    -- update menu elements
                     local elements1           = {}
                     elements1[#elements1 + 1] = {
                         -- heritage
-                        label = data.current.label,
+                        label = T.MenuHeritage.element.label .. ": " .. selectedHeritageData.label,
                         type = "slider",
                         value = data.current.value,
                         info = data.current.info,
-                        min = 0,
+                        min = 1,
                         max = #data.current.info,
                         desc = data.current.desc,
                         tag = "heritage"
@@ -946,16 +1048,6 @@ function OpenHerritageMenu(table)
 
                     menu.setElements(elements1)
                     menu.refresh()
-                    PlayerSkin.HeadType = Heads
-                    PlayerSkin.BodyType = Body
-                    PlayerSkin.LegsType = Legs
-                    PlayerSkin.albedo = headtexture
-
-                    ApplyComponentToPed(__player, Heads)
-                    ApplyComponentToPed(__player, Legs)
-                    ApplyComponentToPed(__player, Body)
-                    Citizen.InvokeNative(0xC5E7204F322E49EB, Albedo, headtexture, 0x7FC5B1E1)
-                    UpdateVariation(__player)
                 end
             end
         end, function(data, menu)

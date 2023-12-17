@@ -33,8 +33,10 @@ end
 ---@param skin table skin data
 ---@return table skin data
 function SetDefaultSkin(gender, skin)
+    print("SetDefaultSkin, gender: "..gender.." skin: "..tostring(skin))
+    print(PrintTable(Config.DefaultChar))
     local __data = {}
-    for _, value in pairs(Config.DefaultChar[gender]) do
+    for _, value in pairs(AllHeritages[gender]) do
         for key, _ in pairs(value) do
             if key == "HeadTexture" then
                 local headtext = joaat(value.HeadTexture[1])

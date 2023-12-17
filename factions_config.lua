@@ -1,4 +1,4 @@
-local allHeritages = {
+AllHeritages = {
     Male = {
         {
             label = "Bianco",             -- change label only
@@ -142,12 +142,12 @@ local function filterHeritages(heritageNames)
     local heritagesFemale = {}
 
     for _, searchedHeritageName in ipairs(heritageNames) do
-        for _, heritage in ipairs(allHeritages.Male) do
+        for _, heritage in ipairs(AllHeritages.Male) do
             if heritage.label == searchedHeritageName then
                 table.insert(heritagesMale, heritage)
             end
         end
-        for _, heritage in ipairs(allHeritages.Female) do
+        for _, heritage in ipairs(AllHeritages.Female) do
             if heritage.label == searchedHeritageName then
                 table.insert(heritagesFemale, heritage)
             end
@@ -192,7 +192,7 @@ Factions = {
                 max = 4,
                 value = 3,
             },
-            heritages = allHeritages
+            heritages = AllHeritages
         },
     },
     [3] = {
@@ -206,7 +206,7 @@ Factions = {
                 max = 2,
                 value = 2,
             },
-            heritages = allHeritages
+            heritages = AllHeritages
         },
     },
     [4] = {
@@ -236,7 +236,7 @@ Factions = {
                 max = 2,
                 value = 2,
             },
-            heritages = allHeritages
+            heritages = AllHeritages
         },
     },
 }
