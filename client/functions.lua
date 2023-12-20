@@ -1,6 +1,6 @@
 --LOAD COMPS
 function ApplyComponentToPed(ped, comp)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, false, true, true)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, false, true, true) -- _SET_PED_COMPONENT_ENABLED
     Citizen.InvokeNative(0x66b957aac2eaaeab, ped, comp, 0, 0, 1, 1) -- _UPDATE_SHOP_ITEM_WEARABLE_STATE
     Citizen.InvokeNative(0xAAB86462966168CE, ped, 1)
     UpdateVariation(ped)

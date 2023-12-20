@@ -123,7 +123,7 @@ Translation.Langs = {
             element2 = { label = "Eredità", desc = "Scegli l'eredità del tuo personaggio" },
             element3 = { label = "Capelli", desc = "Scegli il tipo di capelli del tuo personaggio" },
             element4 = { label = "Invecchiamento", desc = "Età del personaggio" },
-            element5 = { label = "Altezza", desc = "Scegli il tipo di corpo del tuo personaggio<br>Alto 3 Normale 2 Basso 1" },
+            element5 = { label = "Altezza", desc = "Scegli l'altezza del tuo personaggio" },
             element6 = { label = "Viso", desc = "Scegli le caratteristiche del viso" },
             element7 = { label = "Stile di vita", desc = "Scegli lo stile di vita del tuo personaggio" },
             element8 = { label = "Trucco", desc = "Scegli il trucco" },

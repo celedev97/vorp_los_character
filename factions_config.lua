@@ -70,7 +70,7 @@ AllHeritages = {
     },
     Female = {
         {
-            label = "White",
+            label = "Bianco",
             imgColor = "",             --todo
             Heads = { "76ACA91E", "30378AB3", "478C7817", "6D06466A", "772F8047", "7C1A194E", "87311A4B",
                 "18665C91", "1B15AE7A", "20F6540D", "F8332625", "ED123FBD", "EBCEE04E", "C28AB791", "BBD7BFC",
@@ -112,7 +112,7 @@ AllHeritages = {
             HeadTexture = { "mp_head_fr1_sc05_c0_000_ab" },
         },
         {
-            label = "Nativo",
+            label = "Nativo Scuro",
             imgColor = "",
             Heads = { "2AE6E5C", "4A52F943", "50882CFA", "", "65F9F637", "6A0AB89D", "8E53BDC1",
                 "F7AC67A8", "E6648288", "E25DCD6C", "CDC2BD9", "C71039E6", "BFAFA3EF", "B8F8F515",
@@ -236,7 +236,20 @@ Factions = {
                 max = 2,
                 value = 2,
             },
-            heritages = AllHeritages
+            heritages = AllHeritages,
+            lifeStyle = {
+                scars = {
+                    texture = {
+                        min = 1,
+                        value = 1,
+                    },
+                    opacity = {
+                        value = 5,
+                        min = 5,
+                        max = 10,
+                    }
+                }
+            }
         },
     },
 }

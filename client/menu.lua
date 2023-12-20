@@ -5,8 +5,63 @@ TriggerEvent("menuapi:getData", function(call)
     MenuData = call
 end)
 
+
+--* HELPER
+-- todo  menu images
+LifeStyleLabelLookup = {
+    moles = {
+        label = T.MenuLifeStyle.element.label,
+        txt_id = "moles_tx_id",
+        opacity = "moles_opacity",
+        vis = "moles_visibility"
+    },
+    spots = {
+        label = T.MenuLifeStyle.element2.label,
+        txt_id = "spots_tx_id",
+        opacity = "spots_opacity",
+        vis = "spots_visibility"
+    },
+    complex = {
+        label = T.MenuLifeStyle.element3.label,
+        txt_id = "complex_tx_id",
+        opacity = "complex_opacity",
+        vis = "complex_visibility"
+    },
+    acne = {
+        label = T.MenuLifeStyle.element4.label,
+        txt_id = "acne_tx_id",
+        opacity = "acne_opacity",
+        vis = "acne_visibility"
+    },
+    freckles = {
+        label = T.MenuLifeStyle.element5.label,
+        txt_id = "freckles_tx_id",
+        opacity = "freckles_opacity",
+        vis = "freckles_visibility"
+    },
+    disc = {
+        label = T.MenuLifeStyle.element6.label,
+        txt_id = "disc_tx_id",
+        opacity = "disc_opacity",
+        vis = "disc_visibility"
+    },
+    scars = {
+        label = T.MenuLifeStyle.element7.label,
+        txt_id = "scars_tx_id",
+        opacity = "scars_opacity",
+        vis = "scars_visibility"
+    },
+    grime = {
+        label = T.MenuLifeStyle.element8.label,
+        txt_id = "grime_tx_id",
+        opacity = "grime_opacity",
+        vis = "grime_visibility"
+    },
+}
+
+
 local height = 0
-local heightIndex = 0
+local heightIndex = 2
 local heightLabel = T.MenuAppearance.element5.label
 
 local heritageIndex = 1
@@ -26,6 +81,48 @@ end
 
 --* Local functions
 local currentFactionData
+
+local function SetLifestyleOpacity(field_name, opacity)
+    print("SETTING LIFESTYLE OPACITY FOR " .. field_name .. " TO " .. opacity)
+    local field_texture_id = LifeStyleLabelLookup[field_name].txt_id
+    local field_opacity_id = LifeStyleLabelLookup[field_name].opacity
+    local field_visibility_id = LifeStyleLabelLookup[field_name].vis
+    
+    if opacity > 0 then
+        PlayerSkin[field_visibility_id] = 1
+        PlayerSkin[field_opacity_id] = opacity / 10
+        toggleOverlayChange(field_name, PlayerSkin[field_visibility_id],
+            PlayerSkin[field_texture_id], 0, 0, 1, 1.0, 0, 0, 0, 0,
+            0, 1, PlayerSkin[field_opacity_id], PlayerSkin.albedo)
+    else
+        PlayerSkin[field_visibility_id] = 0
+        PlayerSkin[field_opacity_id] = 0
+        toggleOverlayChange(field_name, PlayerSkin[field_visibility_id],
+            PlayerSkin[field_texture_id], 0, 0, 1, 1.0, 0, 0, 0, 0,
+            0, 1, PlayerSkin[field_opacity_id], PlayerSkin.albedo)
+    end
+end
+
+local function SetLifestyleTexture(field_name, textureIndex)
+    print("SETTING LIFESTYLE TEXTURE FOR " .. field_name .. " TO " .. textureIndex)
+    local field_texture_id = LifeStyleLabelLookup[field_name].txt_id
+    local field_opacity_id = LifeStyleLabelLookup[field_name].opacity
+    local field_visibility_id = LifeStyleLabelLookup[field_name].vis
+
+    if textureIndex > 0 then
+        PlayerSkin[field_texture_id] = textureIndex
+        toggleOverlayChange(field_name, PlayerSkin[field_visibility_id],
+            PlayerSkin[field_texture_id], 0, 0, 1,
+            1.0, 0, 0, 0, 0, 0,
+            1, PlayerSkin[field_opacity_id], PlayerSkin.albedo)
+    else
+        PlayerSkin[field_texture_id] = 0
+        toggleOverlayChange(field_name, PlayerSkin[field_visibility_id],
+            PlayerSkin[field_texture_id], 0, 0, 1,
+            1.0, 0, 0, 0, 0, 0,
+            1, PlayerSkin[field_opacity_id], PlayerSkin.albedo)
+    end
+end
 
 local function SetHeight(selectedHeightIndex)
     heightIndex = selectedHeightIndex
@@ -77,6 +174,7 @@ local function SetHeritage(selectedHeritageIndex)
     PlayerSkin.albedo   = headtexture
 
     print("HEADS: " .. Heads)
+    print("HEADTEXTURE: ".. tostring(headtexture) .. " " .. SkinColor.HeadTexture[1])
     print("LEGS: " .. Legs)
     print("BODY: " .. Body)
     print("ALBEDO: " .. Albedo)
@@ -91,6 +189,8 @@ end
 local function SetSelectedFaction(factionID)
     print("SETTING SELECTED FACTION..." .. factionID)
     PlayerFaction = factionID
+    local gender = GetGender();
+
 
     for _, value in ipairs(Factions) do
         if value.value == factionID then
@@ -98,14 +198,55 @@ local function SetSelectedFaction(factionID)
         end
     end
     print(PrintTable(currentFactionData))
-    -- TODO: LOAD THE POSSIBLE OPTIONS FOR THE FACTION
-    -- CHECK IF THE CURRENT VALUES ARE IN THE POSSIBLE OPTIONS
-    -- IF THEY'RE NOT SET THE DEFAULTS, THEN UPDATE THE CHARACTER
 
-    -- setting default height for this faction
-    SetHeight(currentFactionData.appearance.height.value)
-    -- TODO: setting first heritage for this faction
-    SetHeritage(1)
+    -- setting default height for this faction if the current height is not in the range
+    if (heightIndex < currentFactionData.appearance.height.min or heightIndex > currentFactionData.appearance.height.max) then
+        SetHeight(currentFactionData.appearance.height.value)
+    end
+
+    --setting default heritage for this faction if the current heritage is not in the range
+    local foundHeritage = false	
+    for i, heritage in ipairs(currentFactionData.appearance.heritages[gender]) do
+        local headtexture = joaat(heritage.HeadTexture[1])
+        if (headtexture == PlayerSkin.albedo) then
+            print("FOUND VALID HERITAGE, index"..tostring(i))
+            SetHeritage(i)
+            foundHeritage = true
+            break
+        end
+    end
+
+    if (not foundHeritage) then
+        print("HERITAGE NOT FOUND, SETTING DEFAULT FOR FACTION")
+        SetHeritage(1)
+    end
+
+    --looping over Config.overlays_info
+    for key, value in pairs(Config.overlays_info) do
+        if (
+                currentFactionData.appearance.lifeStyle ~= nil
+                and currentFactionData.appearance.lifeStyle[key] ~= nil
+                and currentFactionData.appearance.lifeStyle[key].texture ~= nil
+                and currentFactionData.appearance.lifeStyle[key].texture.value ~= nil
+            ) then
+            --TODO: APPLY DEFAULT TEXTURE VALUE
+            print("SETTING DEFAULT TEXTURE VALUE FOR "..key)
+            SetLifestyleTexture(key, currentFactionData.appearance.lifeStyle[key].texture.value)
+        end
+
+        if (
+                currentFactionData.appearance.lifeStyle ~= nil
+                and currentFactionData.appearance.lifeStyle[key] ~= nil
+                and currentFactionData.appearance.lifeStyle[key].opacity ~= nil
+                and currentFactionData.appearance.lifeStyle[key].opacity.value ~= nil
+            ) then
+            --TODO SetLifestyleOpacity(searchKey)
+            print("SETTING DEFAULT OPACITY VALUE FOR " .. key)
+            SetLifestyleOpacity(key, currentFactionData.appearance.lifeStyle[key].opacity.value)
+        end
+    end
+
+    -- setting default body type for this faction if the current body type is not in the range
 end
 
 
@@ -484,7 +625,7 @@ function OpenCharCreationMenu(clothingtable)
             if (data.current.value == "save") then
                 menu.close()
                 --* name character
-                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName, PlayerFaction.value)
+                TriggerServerEvent("vorpcharacter:saveCharacter", PlayerSkin, PlayerClothing, FirstName, LastName, PlayerFaction)
                 CachedComponents = PlayerClothing
                 CachedSkin = PlayerSkin
                 __CloseAll()
@@ -947,16 +1088,16 @@ function OpenHerritageMenu(table)
     }
 
     elements[#elements + 1] = {
-        -- skin color
-        label = T.MenuHeritage.element2.label .. #data.current.info[data.current.value].Heads,
+        -- face type
+        label = T.MenuHeritage.element2.label .. #selectedHeritageData.Heads,
         type = "slider",
         value = 0,
         info = nil,
-        comp = data.current.info[data.current.value].Heads,
+        comp = selectedHeritageData.Heads,
         min = 0,
-        max = #data.current.info[data.current.value].Heads,                 -- get color index and update when component changes
+        max = #selectedHeritageData.Heads, -- get color index and update when component changes
         desc = T.MenuHeritage.element3.desc ..
-            #data.current.info[data.current.value].Heads .. ' ' .. T.MenuHeritage.element3.desc2,
+            #selectedHeritageData.Heads .. ' ' .. T.MenuHeritage.element3.desc2,
         tag = "color"
     }
 
@@ -1592,58 +1733,59 @@ function OpenFaceModificationMenu(table, comp, img)
         end)
 end
 
---* HELPER
--- todo  menu images
-local labelLookup = {
-    moles = {
-        label = T.MenuLifeStyle.element.label,
-        txt_id = "moles_tx_id",
-        opacity = "moles_opacity",
-        vis = "moles_visibility"
-    },
-    spots = {
-        label = T.MenuLifeStyle.element2.label,
-        txt_id = "spots_tx_id",
-        opacity = "spots_opacity",
-        vis = "spots_visibility"
-    },
-    complex = {
-        label = T.MenuLifeStyle.element3.label,
-        txt_id = "complex_tx_id",
-        opacity = "complex_opacity",
-        vis = "complex_visibility"
-    },
-    acne = {
-        label = T.MenuLifeStyle.element4.label,
-        txt_id = "acne_tx_id",
-        opacity = "acne_opacity",
-        vis = "acne_visibility"
-    },
-    freckles = {
-        label = T.MenuLifeStyle.element5.label,
-        txt_id = "freckles_tx_id",
-        opacity = "freckles_opacity",
-        vis = "freckles_visibility"
-    },
-    disc = {
-        label = T.MenuLifeStyle.element6.label,
-        txt_id = "disc_tx_id",
-        opacity = "disc_opacity",
-        vis = "disc_visibility"
-    },
-    scars = {
-        label = T.MenuLifeStyle.element7.label,
-        txt_id = "scars_tx_id",
-        opacity = "scars_opacity",
-        vis = "scars_visibility"
-    },
-    grime = {
-        label = T.MenuLifeStyle.element8.label,
-        txt_id = "grime_tx_id",
-        opacity = "grime_opacity",
-        vis = "grime_visibility"
-    },
-}
+local function getLifeStyleTextureMinMax(searchKey)
+    local min = 0
+    local max = #Config.overlays_info[searchKey]
+
+    if (
+            currentFactionData.appearance.lifeStyle ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey] ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].texture ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].texture.min ~= nil
+        ) then
+        min = currentFactionData.appearance.lifeStyle[searchKey].texture.min
+        print("LOCKING MIN TXT "..searchKey.." TO "..min)
+    end
+
+    if (
+            currentFactionData.appearance.lifeStyle ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey] ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].texture ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].texture.max ~= nil
+        ) then
+        max = currentFactionData.appearance.lifeStyle[searchKey].texture.max
+        print("LOCKING MAX TXT " .. searchKey .. " TO " .. max)
+    end
+
+    return min, max
+end
+
+local function getLifeStyleOpacityMinMax(searchKey)
+    local min = 0
+    local max = 10
+
+    if (
+            currentFactionData.appearance.lifeStyle ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey] ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].opacity ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].opacity.min ~= nil
+        ) then
+        min = currentFactionData.appearance.lifeStyle[searchKey].opacity.min
+        print("LOCKING MIN OPACITY "..searchKey.." TO "..min)
+    end
+
+    if (
+            currentFactionData.appearance.lifeStyle ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey] ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].opacity ~= nil
+            and currentFactionData.appearance.lifeStyle[searchKey].opacity.max ~= nil
+        ) then
+        max = currentFactionData.appearance.lifeStyle[searchKey].opacity.max
+        print("LOCKING MAX OPACITY " .. searchKey .. " TO " .. max)
+    end
+
+    return min, max
+end
 
 --* Life Style Menu
 function OpenLifeStyleMenu(table)
@@ -1651,31 +1793,33 @@ function OpenLifeStyleMenu(table)
     local elements = {}
 
     for key, value in pairs(Config.overlays_info) do
-        if labelLookup[key] then
+        local minOpacity, maxOpacity = getLifeStyleOpacityMinMax(key)
+        local minTexture, maxTexture = getLifeStyleTextureMinMax(key)
+        if LifeStyleLabelLookup[key] then
             -- *texture
             elements[#elements + 1] = {
-                label = labelLookup[key].label,
-                value = PlayerSkin[labelLookup[key].txt_id],
-                min = 0,
-                max = #value,
+                label = LifeStyleLabelLookup[key].label,
+                value = PlayerSkin[LifeStyleLabelLookup[key].txt_id],
+                min = minTexture,
+                max = maxTexture,
                 type = "slider",
-                txt_id = labelLookup[key].txt_id,
-                opac = labelLookup[key].opacity,
-                visibility = labelLookup[key].vis,
+                txt_id = LifeStyleLabelLookup[key].txt_id,
+                opac = LifeStyleLabelLookup[key].opacity,
+                visibility = LifeStyleLabelLookup[key].vis,
                 desc = T.MenuLifeStyle.element.desc,
                 name = key,
                 tag = "texture"
             }
             --* opacity
             elements[#elements + 1] = {
-                label = labelLookup[key].label .. " ()" .. T.MenuLifeStyle.opacityLabel..")",
-                value = PlayerSkin[labelLookup[key].opacity],
-                min = 0,
-                max = 10,
+                label = LifeStyleLabelLookup[key].label .. " (" .. T.MenuLifeStyle.opacityLabel..")",
+                value = PlayerSkin[LifeStyleLabelLookup[key].opacity]*10,
+                min = minOpacity,
+                max = maxOpacity,
                 type = "slider",
-                txt_id = labelLookup[key].txt_id,
-                opac = labelLookup[key].opacity,
-                visibility = labelLookup[key].vis,
+                txt_id = LifeStyleLabelLookup[key].txt_id,
+                opac = LifeStyleLabelLookup[key].opacity,
+                visibility = LifeStyleLabelLookup[key].vis,
                 desc = T.MenuLifeStyle.desc,
                 name = key,
                 tag = "opacity"
@@ -1700,38 +1844,12 @@ function OpenLifeStyleMenu(table)
 
             --* Texture
             if data.current.tag == "texture" then
-                if data.current.value > 0 then
-                    --PlayerSkin[data.current.visibility] = 1
-                    PlayerSkin[data.current.txt_id] = data.current.value
-                    toggleOverlayChange(data.current.name, PlayerSkin[data.current.visibility],
-                        PlayerSkin[data.current.txt_id], 0, 0, 1,
-                        1.0, 0, 0, 0, 0, 0,
-                        1, PlayerSkin[data.current.opac], PlayerSkin.albedo)
-                else
-                    -- PlayerSkin[data.current.visibility] = 0
-                    PlayerSkin[data.current.txt_id] = 0
-                    toggleOverlayChange(data.current.name, PlayerSkin[data.current.visibility],
-                        PlayerSkin[data.current.txt_id], 0, 0, 1,
-                        1.0, 0, 0, 0, 0, 0,
-                        1, PlayerSkin[data.current.opac], PlayerSkin.albedo)
-                end
+                SetLifestyleTexture(data.current.name, data.current.value)
             end
 
             --* Opacity
             if data.current.tag == "opacity" then
-                if data.current.value > 0 then
-                    PlayerSkin[data.current.visibility] = 1
-                    PlayerSkin[data.current.opac] = data.current.value / 10
-                    toggleOverlayChange(data.current.name, PlayerSkin[data.current.visibility],
-                        PlayerSkin[data.current.txt_id], 0, 0, 1, 1.0, 0, 0, 0, 0,
-                        0, 1, PlayerSkin[data.current.opac], PlayerSkin.albedo)
-                else
-                    PlayerSkin[data.current.visibility] = 0
-                    PlayerSkin[data.current.opac] = 0
-                    toggleOverlayChange(data.current.name, PlayerSkin[data.current.visibility],
-                        PlayerSkin[data.current.txt_id], 0, 0, 1, 1.0, 0, 0, 0, 0,
-                        0, 1, PlayerSkin[data.current.opac], PlayerSkin.albedo)
-                end
+                SetLifestyleOpacity(data.current.name, data.current.value)
             end
         end, function(data, menu)
 

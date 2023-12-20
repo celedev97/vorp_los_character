@@ -26,6 +26,7 @@ files {
 	--'ui/*',
 	'images/*png',
 	'clothingfemale/*png',
+	'stream/*'
 }
 
 --========= VERSION =============--
