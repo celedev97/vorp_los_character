@@ -23,17 +23,24 @@ AddEventHandler("vorpcharacter:saveCharacter", function(skin, clothes, firstname
 	local _source = source
 	local playerCoords = Config.SpawnCoords.position
 	local playerHeading = Config.SpawnCoords.heading
-	VorpCore.getUser(_source).addCharacter(firstname, lastname, json.encode(skin), json.encode(clothes))
+
+	local user = VorpCore.getUser(_source)
+	local steamID = user.getIdentifier()
+
+	user.addCharacter(firstname, lastname, json.encode(skin), json.encode(clothes))
 	Wait(600)
-	exports.ghmattimysql:execute("UPDATE characters SET faction = @faction WHERE firstname = @firstname AND lastname = @lastname", {
-		['@faction'] = faction,
-		['@firstname'] = firstname,
-		['@lastname'] = lastname
-	})
 	TriggerClientEvent("vorp:initCharacter", _source, playerCoords, playerHeading, false)
 	-- wait for char to be made
 	SetTimeout(3000, function()
 		TriggerEvent("vorp_NewCharacter", _source)
+
+		--TODO: SELECT CHARACTER WITH SELECTED STEAMID AND HIGHER CHARID, GET THE CHAR ID AND UPDATE ITS FACTION
+		print("UPDATE characters SET faction = "..faction.." WHERE (SELECT MAX(charidentifier) FROM characters WHERE identifier = "..steamID.." AND faction IS NULL)")
+		exports.ghmattimysql:execute(
+			"UPDATE characters SET faction = @faction WHERE (SELECT MAX(charidentifier) FROM characters WHERE identifier = @identifier AND faction IS NULL)", {
+			['@faction'] = faction,
+			['@identifier'] = steamID,
+		})
 	end)
 end)
 
